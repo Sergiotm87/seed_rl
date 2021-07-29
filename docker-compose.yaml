@@ -1,0 +1,24 @@
+services:
+
+  learner:
+    image: seed_rl:atari
+    container_name: seed_learner
+    ports:
+      - 6006-6015:6006-6015
+      - 8686:8686
+    restart: unless-stopped
+    entrypoint: ./docker/run_learner.sh
+    command: atari r2d2 1 1
+    environment:
+      - HOST_PERMS=1000:1000
+    tty: true
+
+  actor:
+    image: seed_rl:atari
+    container_name: seed_actor
+    restart: unless-stopped
+    entrypoint: ./docker/run_actor.sh
+    command: atari r2d2 1 1
+    environment:
+      - HOST_PERMS=1000:1000
+    tty: true
