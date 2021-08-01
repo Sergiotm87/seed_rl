@@ -53,15 +53,9 @@ tmux send-keys KPEnter
 tmux send-keys "stop_seed"
 tmux new-window -d -n learner
 
-COMMAND='rm /tmp/agent -Rf; '"${LEARNER_BINARY}"' --logtostderr --pdb_post_mortem '"$@"' --num_envs='"${NUM_ENVS}"' --env_batch_size='"${ENV_BATCH_SIZE}"''
+COMMAND='rm /tmp/agent -Rf; '"${LEARNER_BINARY}"' --logtostderr'
 echo $COMMAND
 tmux send-keys -t "learner" "$COMMAND" ENTER
-
-#for ((id=0; id<$NUM_ACTORS; id++)); do
-#    tmux new-window -d -n "actor_${id}"
-#    COMMAND=''"${ACTOR_BINARY}"' --logtostderr --pdb_post_mortem '"$@"' --num_envs='"${NUM_ENVS}"' --task='"${id}"' --env_batch_size='"${ENV_BATCH_SIZE}"''
-#    tmux send-keys -t "actor_${id}" "$COMMAND" ENTER
-#done
 
 tmux new-window -d -n tensorboard
 tmux send-keys -t "tensorboard" "tensorboard --logdir /tmp/agent/ --bind_all" ENTER

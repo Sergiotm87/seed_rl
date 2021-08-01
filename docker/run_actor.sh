@@ -25,7 +25,8 @@ ENVIRONMENT=$1
 AGENT=$2
 NUM_ACTORS=$3
 ENV_BATCH_SIZE=$4
-shift 4
+ID=$5
+shift 5
 
 export PYTHONPATH=$PYTHONPATH:/
 
@@ -53,17 +54,8 @@ tmux send-keys KPEnter
 tmux send-keys "stop_seed"
 tmux new-window -d -n learner
 
-#COMMAND='rm /tmp/agent -Rf; '"${LEARNER_BINARY}"' --logtostderr --pdb_post_mortem '"$@"' --num_envs='"${NUM_ENVS}"' --env_batch_size='"${ENV_BATCH_SIZE}"''
-#echo $COMMAND
-#tmux send-keys -t "learner" "$COMMAND" ENTER
-
-for ((id=0; id<$NUM_ACTORS; id++)); do
-    tmux new-window -d -n "actor_${id}"
-    COMMAND=''"${ACTOR_BINARY}"' --logtostderr --pdb_post_mortem '"$@"' --num_envs='"${NUM_ENVS}"' --task='"${id}"' --env_batch_size='"${ENV_BATCH_SIZE}"''
-    tmux send-keys -t "actor_${id}" "$COMMAND" ENTER
-done
-
-#tmux new-window -d -n tensorboard
-#tmux send-keys -t "tensorboard" "tensorboard --logdir /tmp/agent/ --bind_all" ENTER
+tmux new-window -d -n "actor_${ID}"
+COMMAND=''"${ACTOR_BINARY}"' --logtostderr --num_envs='"${NUM_ENVS}"' --task='"${ID}"' --env_batch_size='"${ENV_BATCH_SIZE}"''
+tmux send-keys -t "actor_${id}" "$COMMAND" ENTER
 
 tmux attach -t seed_rl

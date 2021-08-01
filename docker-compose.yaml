@@ -1,24 +1,45 @@
+version: "3.8"
+
 services:
 
   learner:
     image: seed_rl:atari
+    build:
+      context: ./
+      dockerfile: ./docker/Dockerfile.atari
     container_name: seed_learner
     ports:
       - 6006-6015:6006-6015
       - 8686:8686
     restart: unless-stopped
     entrypoint: ./docker/run_learner.sh
-    command: atari r2d2 1 1
+    command: atari r2d2
+    volumes:
+      - ./data/:/tmp/agent/
     environment:
       - HOST_PERMS=1000:1000
     tty: true
 
-  actor:
+  actor1:
     image: seed_rl:atari
-    container_name: seed_actor
+    container_name: seed_actor_1
     restart: unless-stopped
     entrypoint: ./docker/run_actor.sh
-    command: atari r2d2 1 1
+    command: atari r2d2 1 2 0 # ENVIRONMENT=$1 AGENT=$2 NUM_ACTORS=$3 ENV_BATCH_SIZE=$4 ID=$5
+    extra_hosts:
+      learner: 192.168.1.133 # host with learner
+    environment:
+      - HOST_PERMS=1000:1000
+    tty: true
+
+  actor2:
+    image: seed_rl:atari
+    container_name: seed_actor_2
+    restart: unless-stopped
+    entrypoint: ./docker/run_actor.sh
+    command: atari r2d2 1 2 1
+    extra_hosts:
+      learner: 192.168.1.133 # host with learner
     environment:
       - HOST_PERMS=1000:1000
     tty: true
